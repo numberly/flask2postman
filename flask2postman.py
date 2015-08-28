@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import re
+import sys
 from copy import copy
 from time import time
 from uuid import uuid4
@@ -88,12 +89,32 @@ class Route:
         return cls(name, url, method)
 
 
+# ramnes: shamelessly stolen from https://www.python.org/dev/peps/pep-0257/
+def trim(docstring):
+    if not docstring:
+        return ""
+    lines = docstring.expandtabs().splitlines()
+    indent = sys.maxint
+    for line in lines[1:]:
+        stripped = line.lstrip()
+        if stripped:
+            indent = min(indent, len(line) - len(stripped))
+    trimmed = [lines[0].strip()]
+    if indent < sys.maxint:
+        for line in lines[1:]:
+            trimmed.append(line[indent:].rstrip())
+    while trimmed and not trimmed[-1]:
+        trimmed.pop()
+    while trimmed and not trimmed[0]:
+        trimmed.pop(0)
+    return '\n'.join(trimmed)
+
+
 def main():
     import json
     import logging
     import os
     import site
-    import sys
     from argparse import ArgumentParser
 
     from flask import Flask, current_app
@@ -138,7 +159,9 @@ def main():
         for rule in rules:
             for method in rule.methods:
                 if args.all or method not in ["OPTIONS", "HEAD"]:
+                    endpoint = current_app.view_functions[rule.endpoint]
                     route = Route.from_werkzeug(rule, method, args.base_url)
+                    route.description = trim(endpoint.__doc__)
                     collection.add_route(route)
 
     print(json.dumps(collection.to_dict()))

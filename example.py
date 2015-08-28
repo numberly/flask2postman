@@ -5,6 +5,11 @@ app = Flask(__name__)
 
 @app.route("/foo", methods=["GET"])
 def get_foo(self):
+    """Get some foo.
+
+    Returns:
+        A string contaning a nice foo.
+    """
     return "foo"
 
 
@@ -16,3 +21,7 @@ def patch_foo(self):
 @app.route("/bar", methods=["GET", "POST", "PUT"])
 def bar(self):
     return "", 501
+
+
+if __name__ == "__main__":
+    app.run()
