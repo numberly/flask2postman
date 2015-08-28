@@ -40,6 +40,7 @@ setup(
         'Topic :: Software Development :: Testing',
         'Topic :: Utilities'
     ],
+    py_modules=['flask2postman'],
     entry_points={
         'console_scripts': ['flask2postman = flask2postman:main']
     }
