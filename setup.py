@@ -9,7 +9,7 @@ description = long_description.split('\n')[4]
 setup(
     name='flask2postman',
     version=__version__,
-    license='',
+    license='MIT',
     author='Guillaume Gelin',
     author_email='ramnes@1000mercis.com',
     url='https://github.com/1000mercis/flask2postman',
