@@ -85,11 +85,17 @@ class Route:
 
 def main():
     import os
+    import sys
     import json
     import logging
     from argparse import ArgumentParser
 
     from flask import Flask, current_app
+
+    sys.path.append(os.getcwd())
+    if os.environ["VIRTUAL_ENV"]:
+        print("WARNING: Attempting to work in a virtualenv. If you encounter"
+              " problems, please install flask2postman inside the virtualenv.")
 
     parser = ArgumentParser()
     parser.add_argument("flask_instance")
@@ -106,8 +112,8 @@ def main():
     try:
         app_path, app_name = args.flask_instance.rsplit('.', 1)
         app = getattr(__import__(app_path), app_name)
-    except Exception:
-        parser.error("can't import \"{}\"".format(args.flask_instance))
+    except Exception as e:
+        parser.error("can't import \"{}\" ({})".format(args.flask_instance, str(e)))
 
     if not isinstance(app, Flask):
         parser.error("\"{}\" is not a Flask instance".format(args.flask_instance))
