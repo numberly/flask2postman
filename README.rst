@@ -1,8 +1,11 @@
+.. _Postman: https://www.getpostman.com/
+,, _Flask: http://flask.pocoo.org/
+
 =============
 flask2postman
 =============
 
-A tool that creates a Postman configuration from a Flask application.
+A tool that creates a Postman_ collection from a Flask_ application.
 
 
 Install
@@ -16,14 +19,20 @@ Install
 Example
 =======
 
-See :code:`example.py` for the example application.
+We have a Flask project called "example", (see :code:`example.py`), and we want
+to generate a Postman collection out of it.
+
+We just need to tell :code:`flask2postman` how to import the Flask instance, and
+optionally give a name to the collection:
 
 .. code-block:: sh
 
     $ flask2postman example.app --name "Example Collection" > example.json
 
-It will write the generated JSON configuration into a :code:`example.json` file,
-then you just have to import than file into Postman ("Import Collection" button,
+This will generate the JSON configuration, and write it into the
+:code:`example.json` file.
+
+Then we just have to import this file into Postman ("Import Collection" button,
 left panel, top right), and profit:
 
 .. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/master/img/screenshot.jpg
