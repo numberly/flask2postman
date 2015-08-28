@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import re
 from copy import copy
 from time import time
@@ -10,6 +12,9 @@ methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
 
 var_re = re.compile(r"(?P<var><[a-zA-Z0-9_]+:(?P<var_name>[a-zA-Z0-9_]+)>)")
+
+venv_warning = ("WARNING: Attempting to work in a virtualenv. If you encounter "
+                "problems, please install flask2postman inside the virtualenv.")
 
 
 def get_time():
@@ -84,18 +89,27 @@ class Route:
 
 
 def main():
-    import os
-    import sys
     import json
     import logging
+    import os
+    import site
+    import sys
     from argparse import ArgumentParser
 
     from flask import Flask, current_app
 
     sys.path.append(os.getcwd())
-    if os.environ["VIRTUAL_ENV"]:
-        print("WARNING: Attempting to work in a virtualenv. If you encounter"
-              " problems, please install flask2postman inside the virtualenv.")
+
+    venv = os.environ["VIRTUAL_ENV"]
+    if venv:
+        print(venv_warning, file=sys.stderr)
+        if sys.platform == "win32":
+            path = os.path.join(venv, 'Lib', 'site-packages')
+        else:
+            python = "python{}.{}".format(*sys.version_info[:2])
+            path = os.path.join(venv, 'lib', python, 'site-packages')
+        sys.path.insert(0, path)
+        site.addsitedir(path)
 
     parser = ArgumentParser()
     parser.add_argument("flask_instance")
