@@ -140,6 +140,8 @@ def main():
                         help="the base of every URL (default: {{base_url}})")
     parser.add_argument("-a", "--all", action="store_true",
                         help="also generate OPTIONS/HEAD methods")
+    parser.add_argument("-i", "--indent", action="store_true",
+                        help="indent the output")
     args = parser.parse_args()
 
     logging.disable(logging.CRITICAL)
@@ -164,7 +166,12 @@ def main():
                     route.description = trim(endpoint.__doc__)
                     collection.add_route(route)
 
-    print(json.dumps(collection.to_dict()))
+    if args.indent:
+        json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)
+    else:
+        json = json.dumps(collection.to_dict())
+
+    print(json)
 
 
 if __name__ == "__main__":
