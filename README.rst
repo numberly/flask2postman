@@ -1,5 +1,5 @@
 .. _Postman: https://www.getpostman.com/
-,, _Flask: http://flask.pocoo.org/
+.. _Flask: http://flask.pocoo.org/
 
 =============
 flask2postman
