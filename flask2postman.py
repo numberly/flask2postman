@@ -100,7 +100,7 @@ def main():
 
     sys.path.append(os.getcwd())
 
-    venv = os.environ["VIRTUAL_ENV"]
+    venv = os.environ.get("VIRTUAL_ENV", None)
     if venv:
         print(venv_warning, file=sys.stderr)
         if sys.platform == "win32":
