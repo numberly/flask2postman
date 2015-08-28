@@ -26,7 +26,7 @@ It will write the generated JSON configuration into a :code:`example.json` file,
 then you just have to import than file into Postman ("Import Collection" button,
 left panel, top right), and profit:
 
-.. image:: https://github.com/1000mercis/flask2postman/blob/master/img/screenshot.jpg
+.. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/master/img/screenshot.jpg
     :alt: Postman screenshot
 
 
