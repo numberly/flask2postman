@@ -59,9 +59,9 @@ class Collection:
             self.add_folder(folder)
         return folder
 
-    def add_route(self, route):
-        route.collection_id = self.id
-        self._requests.append(route)
+    def add_request(self, request):
+        request.collection_id = self.id
+        self._requests.append(request)
         self.reorder_requests()
 
     @property
@@ -95,9 +95,9 @@ class Folder:
             return str(methods_order.index(request.method)) + request.name
         self._requests = sorted(self._requests, key=_get_key)
 
-    def add_route(self, route):
-        route._folder = self
-        self._requests.append(route)
+    def add_request(self, request):
+        request._folder = self
+        self._requests.append(request)
         self.reorder_requests()
 
     @property
@@ -111,7 +111,7 @@ class Folder:
         return d
 
 
-class Route:
+class Request:
 
     def __init__(self, name, url, method, collection_id="", data=None,
                  data_mode="params", description="", headers=""):
@@ -233,11 +233,11 @@ def main():
             for method in rule.methods:
                 if args.all or method not in ["OPTIONS", "HEAD"]:
                     endpoint = current_app.view_functions[rule.endpoint]
-                    route = Route.from_werkzeug(rule, method, args.base_url)
-                    route.description = trim(endpoint.__doc__)
+                    request = Request.from_werkzeug(rule, method, args.base_url)
+                    request.description = trim(endpoint.__doc__)
                     if args.folders and folder:
-                        folder.add_route(route)
-                    collection.add_route(route)
+                        folder.add_request(request)
+                    collection.add_request(request)
 
     if args.indent:
         json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)
