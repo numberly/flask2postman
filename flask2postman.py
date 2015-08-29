@@ -31,9 +31,10 @@ def get_time():
 class Collection:
 
     def __init__(self, name):
-        self.id = str(uuid4())
-        self._requests = []
         self._folders = []
+        self._requests = []
+
+        self.id = str(uuid4())
         self.name = name
         self.timestamp = get_time()
 
@@ -43,11 +44,20 @@ class Collection:
         self._requests = sorted(self._requests, key=_get_key)
 
     def add_folder(self, folder):
-        folder._collection = self
         folder.collection_id = self.id
-        folder.collection_name = self.name
         self._folders.append(folder)
-        self.reorder_requests()
+
+    def find_folder(self, name):
+        for folder in self._folders:
+            if folder.name == name:
+                return folder
+
+    def get_folder(self, name):
+        folder = self.find_folder(name)
+        if not folder:
+            folder = Folder(name)
+            self.add_folder(folder)
+        return folder
 
     def add_route(self, route):
         route.collection_id = self.id
@@ -56,7 +66,7 @@ class Collection:
 
     @property
     def order(self):
-        return [request.id for request in self._requests if request.folder is None]
+        return [request.id for request in self._requests if not request._folder]
 
     @property
     def requests(self):
@@ -73,24 +83,22 @@ class Collection:
 
 
 class Folder:
-    _folders_ = dict()
 
     def __init__(self, name):
-        self.id = str(uuid4())
-        self._collection = None
         self._requests = []
-        self.name = name
 
-    def add_route(self, route):
-        route.folder = self.id
-        self._collection.add_route(route)
-        self._requests.append(route)
-        self.reorder_requests()
+        self.id = str(uuid4())
+        self.name = name
 
     def reorder_requests(self):
         def _get_key(request):
             return str(methods_order.index(request.method)) + request.name
         self._requests = sorted(self._requests, key=_get_key)
+
+    def add_route(self, route):
+        route._folder = self
+        self._requests.append(route)
+        self.reorder_requests()
 
     @property
     def order(self):
@@ -99,34 +107,26 @@ class Folder:
     def to_dict(self):
         d = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         d["collectionId"] = d.pop("collection_id")
-        d["collectionName"] = d.pop("collection_name")
         d.update(order=self.order)
         return d
-
-    @staticmethod
-    def get_or_create_folder(collection, name):
-        folder = Folder._folders_.get(name)
-        if folder is not None:
-            return folder
-        else:
-            folder = Folder(name)
-            collection.add_folder(folder)
-            Folder._folders_[name] = folder
-            return folder
 
 
 class Route:
 
-    def __init__(self, name, url, method, description="", headers="", data=[],
-                 data_mode="params"):
+    def __init__(self, name, url, method, collection_id="", data=None,
+                 data_mode="params", description="", headers=""):
+        self._folder = None
+
         self.id = str(uuid4())
+        self.collection_id = collection_id
         self.data = data
+        if self.data is None:
+            self.data = []
         self.data_mode = data_mode
         self.description = description
         self.headers = headers
         self.method = method
         self.name = name
-        self.folder = None
         self.time = get_time()
         self.url = url
 
@@ -134,8 +134,6 @@ class Route:
         d = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         d["collectionId"] = d.pop("collection_id")
         d["dataMode"] = d.pop("data_mode")
-        if self.folder is None:
-            d.pop("folder")
         return d
 
     @classmethod
@@ -222,19 +220,24 @@ def main():
 
     with app.app_context():
         collection = Collection(args.name)
-        rules = list(current_app.url_map.iter_rules())
-        for rule in rules:
+        for rule in current_app.url_map.iter_rules():
+            folder = None
+            if args.folders:
+                try:
+                    blueprint_name, _ = rule.endpoint.split('.', 1)
+                except ValueError:
+                    pass
+                else:
+                    folder = collection.get_folder(blueprint_name)
+
             for method in rule.methods:
                 if args.all or method not in ["OPTIONS", "HEAD"]:
                     endpoint = current_app.view_functions[rule.endpoint]
                     route = Route.from_werkzeug(rule, method, args.base_url)
                     route.description = trim(endpoint.__doc__)
-                    folder_name = rule.endpoint.rsplit('.', maxsplit=2)
-                    if len(folder_name) >= 2 and args.folders:
-                        folder = Folder.get_or_create_folder(collection, folder_name[0])
+                    if args.folders and folder:
                         folder.add_route(route)
-                    else:
-                        collection.add_route(route)
+                    collection.add_route(route)
 
     if args.indent:
         json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)
