@@ -18,6 +18,13 @@ venv_warning = ("WARNING: Attempting to work in a virtualenv. If you encounter "
                 "problems, please install flask2postman inside the virtualenv.")
 
 
+PY2 = sys.version_info[0] < 3
+if PY2:
+    maxint = sys.maxint
+else:
+    maxint = sys.maxsize
+
+
 def get_time():
     return int(round(time() * 1000))
 
@@ -157,13 +164,13 @@ def trim(docstring):
     if not docstring:
         return ""
     lines = docstring.expandtabs().splitlines()
-    indent = sys.maxint
+    indent = maxint
     for line in lines[1:]:
         stripped = line.lstrip()
         if stripped:
             indent = min(indent, len(line) - len(stripped))
     trimmed = [lines[0].strip()]
-    if indent < sys.maxint:
+    if indent < maxint:
         for line in lines[1:]:
             trimmed.append(line[indent:].rstrip())
     while trimmed and not trimmed[-1]:
