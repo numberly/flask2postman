@@ -27,16 +27,19 @@ optionally give a name to the collection:
 
 .. code-block:: sh
 
-    $ flask2postman example.app --name "Example Collection" > example.json
+    $ flask2postman example.app --name "Example Collection" --folders > example.json
 
 This will generate the JSON configuration, and write it into the
 :code:`example.json` file.
 
-Then we just have to import this file into Postman ("Import Collection" button,
-left panel, top right), and profit:
+Then we just have to import this file into Postman ("Import Collection" button),
+and profit:
 
 .. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/master/img/screenshot.jpg
     :alt: Postman screenshot
+
+On a side note, you can see that endpoint's docstrings are automatically
+imported as descriptions.
 
 
 Usage
