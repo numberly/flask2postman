@@ -57,6 +57,7 @@ Usage
                             the base of every URL (default: {{base_url}})
       -a, --all             also generate OPTIONS/HEAD methods
       -i, --indent          indent the output
+      -f, --folders         add Postman folders for blueprints
 
 
 License
