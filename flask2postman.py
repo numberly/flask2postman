@@ -6,7 +6,7 @@ import sys
 from time import time
 from uuid import uuid4
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
