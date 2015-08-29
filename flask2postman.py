@@ -3,7 +3,6 @@ from __future__ import print_function
 
 import re
 import sys
-from copy import copy
 from time import time
 from uuid import uuid4
 
@@ -68,12 +67,8 @@ class Collection:
         return [folder.to_dict() for folder in self._folders]
 
     def to_dict(self):
-        d = copy(self.__dict__)
-        d.pop("_requests")
-        d.pop("_folders")
-        d.update(requests=self.requests, order=self.order)
-        if len(self.folders) > 0:
-            d.update(folders=self.folders)
+        d = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        d.update(requests=self.requests, order=self.order, folders=self.folders)
         return d
 
 
@@ -102,9 +97,7 @@ class Folder:
         return [request.id for request in self._requests]
 
     def to_dict(self):
-        d = copy(self.__dict__)
-        d.pop("_requests")
-        d.pop("_collection")
+        d = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         d["collectionId"] = d.pop("collection_id")
         d["collectionName"] = d.pop("collection_name")
         d.update(order=self.order)
@@ -138,7 +131,7 @@ class Route:
         self.url = url
 
     def to_dict(self):
-        d = copy(self.__dict__)
+        d = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         d["collectionId"] = d.pop("collection_id")
         d["dataMode"] = d.pop("data_mode")
         if self.folder is None:
