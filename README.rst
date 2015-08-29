@@ -35,7 +35,7 @@ This will generate the JSON configuration, and write it into the
 Then we just have to import this file into Postman ("Import Collection" button),
 and profit:
 
-.. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/master/img/screenshot.jpg
+.. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/42d20fe89d9d1f831bbfbe6275471e624d40c488/img/screenshot.jpg
     :alt: Postman screenshot
 
 On a side note, you can see that endpoint's docstrings are automatically
