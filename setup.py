@@ -4,8 +4,6 @@ from flask2postman import __version__
 with open('README.rst') as file:
     long_description = file.read()
 
-description = long_description.split('\n')[4]
-
 setup(
     name='flask2postman',
     version=__version__,
@@ -13,7 +11,7 @@ setup(
     author='Guillaume Gelin',
     author_email='ramnes@1000mercis.com',
     url='https://github.com/1000mercis/flask2postman',
-    description=description,
+    description='Generate a Postman collection from your Flask application',
     long_description=long_description,
     platforms=['OS Independent'],
     install_requires=['Flask'],
