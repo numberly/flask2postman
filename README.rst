@@ -47,7 +47,8 @@ Usage
 
 .. code-block:: sh
 
-    usage: flask2postman [-h] [-n NAME] [-b BASE_URL] [-a] flask_instance
+    usage: flask2postman [-h] [-n NAME] [-b BASE_URL] [-a] [-i] [-f]
+                         flask_instance
 
     positional arguments:
       flask_instance
