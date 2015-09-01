@@ -213,10 +213,17 @@ def main():
         app_path, app_name = args.flask_instance.rsplit('.', 1)
         app = getattr(__import__(app_path), app_name)
     except Exception as e:
-        parser.error("can't import \"{}\" ({})".format(args.flask_instance, str(e)))
+        msg = "can't import \"{}\": {}"
+        parser.error(msg.format(args.flask_instance, str(e)))
 
     if not isinstance(app, Flask):
-        parser.error("\"{}\" is not a Flask instance".format(args.flask_instance))
+        try:
+            app = app()
+        except Exception as e:
+            pass
+        if not isinstance(app, Flask):
+            msg = "\"{}\" is not (or did not return) a Flask instance"
+            parser.error(msg.format(args.flask_instance), str(e))
 
     with app.app_context():
         collection = Collection(args.name)
