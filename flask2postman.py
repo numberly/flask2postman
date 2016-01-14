@@ -222,8 +222,8 @@ def main():
         except Exception as e:
             pass
         if not isinstance(app, Flask):
-            msg = "\"{}\" is not (or did not return) a Flask instance"
-            parser.error(msg.format(args.flask_instance), str(e))
+            msg = '"{}" is not (or did not return) a Flask instance (type: {})'
+            parser.error(msg.format(args.flask_instance, type(app)))
 
     with app.app_context():
         collection = Collection(args.name)
