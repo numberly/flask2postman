@@ -5,6 +5,7 @@ import re
 import os
 import site
 import sys
+from importlib import import_module
 from time import time
 from uuid import uuid4
 
@@ -226,7 +227,7 @@ def main():
 
     try:
         app_path, app_name = args.flask_instance.rsplit('.', 1)
-        app = getattr(__import__(app_path), app_name)
+        app = getattr(import_module(app_path), app_name)
     except Exception as e:
         msg = "can't import \"{}\": {}"
         parser.error(msg.format(args.flask_instance, str(e)))
