@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import re
+import os
+import site
 import sys
 from time import time
 from uuid import uuid4
@@ -171,27 +173,40 @@ def trim(docstring):
     return '\n'.join(trimmed)
 
 
+# ramnes: shamelessly stolen from IPython
+def init_virtualenv():
+    venv = os.environ.get("VIRTUAL_ENV", None)
+    if not venv:
+        return
+
+    p = os.path.normcase(sys.executable)
+    paths = [p]
+    while os.path.islink(p):
+        p = os.path.normcase(os.path.join(os.path.dirname(p), os.readlink(p)))
+        paths.append(p)
+    venv_path = os.path.normcase(venv)
+    if any(p.startswith(venv_path) for p in paths):
+        return
+
+    print(venv_warning, file=sys.stderr)
+    if sys.platform == "win32":
+        path = os.path.join(venv, 'Lib', 'site-packages')
+    else:
+        python = "python{}.{}".format(*sys.version_info[:2])
+        path = os.path.join(venv, 'lib', python, 'site-packages')
+    sys.path.insert(0, path)
+    site.addsitedir(path)
+
+
 def main():
     import json
     import logging
-    import os
-    import site
     from argparse import ArgumentParser
 
     from flask import Flask, current_app
 
     sys.path.append(os.getcwd())
-
-    venv = os.environ.get("VIRTUAL_ENV", None)
-    if venv:
-        print(venv_warning, file=sys.stderr)
-        if sys.platform == "win32":
-            path = os.path.join(venv, 'Lib', 'site-packages')
-        else:
-            python = "python{}.{}".format(*sys.version_info[:2])
-            path = os.path.join(venv, 'lib', python, 'site-packages')
-        sys.path.insert(0, path)
-        site.addsitedir(path)
+    init_virtualenv()
 
     parser = ArgumentParser()
     parser.add_argument("flask_instance")
