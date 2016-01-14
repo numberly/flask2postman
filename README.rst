@@ -23,21 +23,26 @@ Install
 Example
 =======
 
-We have a Flask project called "example", (see :code:`example.py`), and we want
-to generate a Postman collection out of it.
+Let's say that you have a Flask project called "example" (see
+:code:`example.py`), and you want to generate a Postman collection out of it.
 
-We just need to tell :code:`flask2postman` how to import the Flask instance, and
-optionally give a name to the collection:
+You just need to tell :code:`flask2postman` how to import the Flask instance,
+and optionally give a name to the Postman collection:
 
 .. code-block:: sh
 
     $ flask2postman example.app --name "Example Collection" --folders > example.json
 
-This will generate the JSON configuration, and write it into the
-:code:`example.json` file.
+If you don't have a global Flask instance but rather use a function to
+initialize your application, that works too:
 
-Then we just have to import this file into Postman ("Import Collection" button),
-and profit:
+.. code-block:: sh
+
+    $ flask2postman example.create_app --name "Example Collection" --folders > example.json
+
+This will generate the JSON configuration, and write it into the
+:code:`example.json` file. You can then import this file into Postman ("Import
+Collection" button), and profit:
 
 .. image:: https://raw.githubusercontent.com/1000mercis/flask2postman/42d20fe89d9d1f831bbfbe6275471e624d40c488/img/screenshot.jpg
     :alt: Postman screenshot
