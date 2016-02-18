@@ -217,6 +217,8 @@ def main():
                         help="the base of every URL (default: {{base_url}})")
     parser.add_argument("-a", "--all", action="store_true",
                         help="also generate OPTIONS/HEAD methods")
+    parser.add_argument("-s", "--static", action="store_true",
+                        help="also generate /static/{{filename}} (Flask internal)")
     parser.add_argument("-i", "--indent", action="store_true",
                         help="indent the output")
     parser.add_argument("-f", "--folders", action="store_true",
@@ -244,6 +246,9 @@ def main():
     with app.app_context():
         collection = Collection(args.name)
         for rule in current_app.url_map.iter_rules():
+            if rule.endpoint == "static" and not args.static:
+                continue
+
             folder = None
             if args.folders:
                 try:

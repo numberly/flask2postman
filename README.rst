@@ -69,6 +69,7 @@ Usage
       -b BASE_URL, --base_url BASE_URL
                             the base of every URL (default: {{base_url}})
       -a, --all             also generate OPTIONS/HEAD methods
+      -s, --static          also generate /static/{{filename}} (Flask internal)
       -i, --indent          indent the output
       -f, --folders         add Postman folders for blueprints
 
