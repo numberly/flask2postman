@@ -253,14 +253,18 @@ def main():
                 else:
                     folder = collection.get_folder(blueprint_name)
 
+            endpoint = current_app.view_functions[rule.endpoint]
+            description = trim(endpoint.__doc__)
+
             for method in rule.methods:
-                if args.all or method not in ["OPTIONS", "HEAD"]:
-                    endpoint = current_app.view_functions[rule.endpoint]
-                    request = Request.from_werkzeug(rule, method, args.base_url)
-                    request.description = trim(endpoint.__doc__)
-                    if args.folders and folder:
-                        folder.add_request(request)
-                    collection.add_request(request)
+                if method in ["OPTIONS", "HEAD"] and not args.all:
+                    continue
+
+                request = Request.from_werkzeug(rule, method, args.base_url)
+                request.description = description
+                if args.folders and folder:
+                    folder.add_request(request)
+                collection.add_request(request)
 
     if args.indent:
         json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)
