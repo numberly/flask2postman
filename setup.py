@@ -10,7 +10,7 @@ setup(
     license='MIT',
     author='Guillaume Gelin',
     author_email='ramnes@1000mercis.com',
-    url='https://github.com/1000mercis/flask2postman',
+    url='https://github.com/numberly/flask2postman',
     description='Generate a Postman collection from your Flask application',
     long_description=long_description,
     platforms=['OS Independent'],
