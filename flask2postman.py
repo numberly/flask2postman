@@ -206,7 +206,7 @@ def main():
 
     from flask import Flask, current_app
 
-    sys.path.append(os.getcwd())
+    sys.path.insert(0, os.getcwd())
     init_virtualenv()
 
     parser = ArgumentParser()
