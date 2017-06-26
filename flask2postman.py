@@ -14,7 +14,7 @@ __version__ = "1.4.2"
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
 
-var_re = re.compile(r"(?P<var><[a-zA-Z0-9_]+:(?P<var_name>[a-zA-Z0-9_]+)>)")
+var_re = re.compile(r"(?P<var><([a-zA-Z0-9_]+:)?(?P<var_name>[a-zA-Z0-9_]+)>)")
 
 venv_warning = ("WARNING: Attempting to work in a virtualenv. If you encounter "
                 "problems, please install flask2postman inside the virtualenv.")
