@@ -6,7 +6,11 @@ flask2postman
 =============
 
 .. image:: https://img.shields.io/pypi/v/flask2postman.svg
-.. image:: https://img.shields.io/pypi/status/flask2postman.svg
+   :target: https://pypi.python.org/pypi/flask2postman
+.. image:: https://img.shields.io/github/license/numberly/flask2postman.svg
+   :target: https://github.com/numberly/flask2postman/blob/master/LICENSE
+
+|
 
 A tool that creates a Postman_ collection from a Flask_ application.
 
