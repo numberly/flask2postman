@@ -9,9 +9,14 @@ class Collection:
 
     def __init__(self, args):
         self.args = args
+        self.blueprints = []
         self.items = []
 
     def add_rules(self, current_app):
+        for blueprint_name in current_app.blueprints:
+            folder = Folder(blueprint_name)
+            self.blueprints.append(folder)
+
         for rule in current_app.url_map.iter_rules():
             endpoint = current_app.view_functions[rule.endpoint]
             for method in rule.methods:
@@ -30,12 +35,42 @@ class Collection:
 
     @property
     def item(self):
-        return [item.to_dict() for item in self.items]
+        items = []
+
+        for item in self.items:
+            if item.blueprint:
+                for blueprint in self.blueprints:
+                    if blueprint.name == item.blueprint:
+                        blueprint.items.append(item)
+            else:
+                items.append(item)
+
+        for blueprint in self.blueprints:
+            items.append(blueprint)
+
+        return [item.to_dict() for item in items]
 
     def to_dict(self):
         return {
             "info": self.info,
             "item": self.item
+        }
+
+
+class Folder:
+
+    def __init__(self, name):
+        self.name = name
+        self.items = []
+
+    @property
+    def item(self):
+        return [item.to_dict() for item in self.items]
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "items": self.item
         }
 
 
@@ -63,6 +98,14 @@ class Item:
             var_name = "{{" + match.group("var_name") + "}}"
             url = url.replace(var, var_name)
         return url
+
+    @property
+    def blueprint(self):
+        if "." in self.rule.endpoint:
+            blueprint_name, _ = self.rule.endpoint.split('.', 1)
+            return blueprint_name
+
+        return None
 
     def to_dict(self):
         return {
