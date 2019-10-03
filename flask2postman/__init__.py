@@ -4,6 +4,7 @@ from importlib import import_module
 
 from .utils import init_virtualenv
 from .postman_v1 import Collection as CollectionV1
+from .postman import Collection
 
 __version__ = "1.4.3"
 
@@ -55,12 +56,11 @@ def main():
             parser.error(msg.format(args.flask_instance, type(app)))
 
     with app.app_context():
-        collection = None
         if args.export_as_v1:
-            collection = CollectionV1(args.name)
+            collection = CollectionV1(args)
         else:
-            raise NotImplementedError
-        collection.add_rules(current_app.url_map.iter_rules(), current_app, args)
+            collection = Collection(args)
+        collection.add_rules(current_app)
 
     if args.indent:
         json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)

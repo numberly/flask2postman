@@ -18,21 +18,22 @@ def get_time():
 
 class Collection:
 
-    def __init__(self, name):
+    def __init__(self, args):
         self._folders = []
         self._requests = []
+        self._args = args
 
         self.id = str(uuid4())
-        self.name = name
+        self.name = args.name
         self.timestamp = get_time()
 
-    def add_rules(self, rules, current_app, args):
-        for rule in rules:
-            if rule.endpoint == "static" and not args.static:
+    def add_rules(self, current_app):
+        for rule in current_app.url_map.iter_rules():
+            if rule.endpoint == "static" and not self._args.static:
                 continue
 
             folder = None
-            if args.folders:
+            if self._args.folders:
                 try:
                     blueprint_name, _ = rule.endpoint.split('.', 1)
                 except ValueError:
@@ -44,12 +45,12 @@ class Collection:
             description = trim(endpoint.__doc__)
 
             for method in rule.methods:
-                if method in ["OPTIONS", "HEAD"] and not args.all:
+                if method in ["OPTIONS", "HEAD"] and not self._args.all:
                     continue
 
-                request = Request.from_werkzeug(rule, method, args.base_url)
+                request = Request.from_werkzeug(rule, method, self._args.base_url)
                 request.description = description
-                if args.folders and folder:
+                if self._args.folders and folder:
                     folder.add_request(request)
                 self.add_request(request)
 
