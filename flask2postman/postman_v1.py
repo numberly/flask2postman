@@ -1,10 +1,10 @@
-#!/usr/bin/env python
 from __future__ import print_function
 
 import re
 from time import time
 from uuid import uuid4
 
+from .utils import trim
 
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
@@ -25,6 +25,33 @@ class Collection:
         self.id = str(uuid4())
         self.name = name
         self.timestamp = get_time()
+
+    def add_rules(self, rules, current_app, args):
+        for rule in rules:
+            if rule.endpoint == "static" and not args.static:
+                continue
+
+            folder = None
+            if args.folders:
+                try:
+                    blueprint_name, _ = rule.endpoint.split('.', 1)
+                except ValueError:
+                    pass
+                else:
+                    folder = self.get_folder(blueprint_name)
+
+            endpoint = current_app.view_functions[rule.endpoint]
+            description = trim(endpoint.__doc__)
+
+            for method in rule.methods:
+                if method in ["OPTIONS", "HEAD"] and not args.all:
+                    continue
+
+                request = Request.from_werkzeug(rule, method, args.base_url)
+                request.description = description
+                if args.folders and folder:
+                    folder.add_request(request)
+                self.add_request(request)
 
     def reorder_requests(self):
         def _get_key(request):

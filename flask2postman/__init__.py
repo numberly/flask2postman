@@ -2,8 +2,8 @@ import os
 import sys
 from importlib import import_module
 
-from .utils import init_virtualenv, trim
-from .postman import Collection, Request
+from .utils import init_virtualenv
+from .postman_v1 import Collection as CollectionV1
 
 __version__ = "1.4.3"
 
@@ -28,6 +28,8 @@ def main():
                         help="also generate OPTIONS/HEAD methods")
     parser.add_argument("-s", "--static", action="store_true",
                         help="also generate /static/{{filename}} (Flask internal)")
+    parser.add_argument("-v1", "--export-as-v1", action="store_true",
+                        help="export using Postman schema v1.0.0 instead of v2.1.0")
     parser.add_argument("-i", "--indent", action="store_true",
                         help="indent the output")
     parser.add_argument("-f", "--folders", action="store_true",
@@ -53,32 +55,12 @@ def main():
             parser.error(msg.format(args.flask_instance, type(app)))
 
     with app.app_context():
-        collection = Collection(args.name)
-        for rule in current_app.url_map.iter_rules():
-            if rule.endpoint == "static" and not args.static:
-                continue
-
-            folder = None
-            if args.folders:
-                try:
-                    blueprint_name, _ = rule.endpoint.split('.', 1)
-                except ValueError:
-                    pass
-                else:
-                    folder = collection.get_folder(blueprint_name)
-
-            endpoint = current_app.view_functions[rule.endpoint]
-            description = trim(endpoint.__doc__)
-
-            for method in rule.methods:
-                if method in ["OPTIONS", "HEAD"] and not args.all:
-                    continue
-
-                request = Request.from_werkzeug(rule, method, args.base_url)
-                request.description = description
-                if args.folders and folder:
-                    folder.add_request(request)
-                collection.add_request(request)
+        collection = None
+        if args.export_as_v1:
+            collection = CollectionV1(args.name)
+        else:
+            raise NotImplementedError
+        collection.add_rules(current_app.url_map.iter_rules(), current_app, args)
 
     if args.indent:
         json = json.dumps(collection.to_dict(), indent=4, sort_keys=True)
