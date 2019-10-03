@@ -38,15 +38,16 @@ class Collection:
         items = []
 
         for item in self.items:
-            if item.blueprint:
+            if item.blueprint and self.args.folders:
                 for blueprint in self.blueprints:
                     if blueprint.name == item.blueprint:
                         blueprint.items.append(item)
             else:
                 items.append(item)
 
-        for blueprint in self.blueprints:
-            items.append(blueprint)
+        if self.args.folders:
+            for blueprint in self.blueprints:
+                items.append(blueprint)
 
         return [item.to_dict() for item in items]
 
