@@ -44,6 +44,8 @@ class Item:
     def __init__(self, rule, endpoint, method, args):
         self.rule = rule
         self.endpoint = endpoint
+        self.args = args
+
         self.method = method
         self.description = trim(endpoint.__doc__)
 
@@ -64,5 +66,10 @@ class Item:
 
     def to_dict(self):
         return {
-            "name": self.name
+            "name": self.name,
+            "request": {
+                "url": self.url,
+                "method": self.method,
+                "description": self.description
+            }
         }
