@@ -9,7 +9,7 @@ from importlib import import_module
 from time import time
 from uuid import uuid4
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
