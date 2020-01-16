@@ -252,7 +252,7 @@ def main():
             folder = None
             if args.folders:
                 try:
-                    blueprint_name, _ = rule.endpoint.split('.', 1)
+                    blueprint_name, _ = rule.endpoint.rsplit('.', 1)
                 except ValueError:
                     pass
                 else:
