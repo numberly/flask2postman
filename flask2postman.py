@@ -237,7 +237,7 @@ def main():
     if not isinstance(app, Flask):
         try:
             app = app()
-        except Exception as e:
+        except Exception:
             pass
         if not isinstance(app, Flask):
             msg = '"{}" is not (or did not return) a Flask instance (type: {})'
