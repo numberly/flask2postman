@@ -4,7 +4,7 @@ import re
 from time import time
 from uuid import uuid4
 
-from .utils import trim
+from flask2postman.utils import trim
 
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
