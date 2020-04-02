@@ -4,12 +4,10 @@ import re
 from time import time
 from uuid import uuid4
 
-from flask2postman.utils import trim
+from flask2postman.utils import trim, var_re
 
 methods_order = ["GET", "POST", "PUT", "PATCH", "DELETE", "COPY", "HEAD",
                  "OPTIONS", "LINK", "UNLINK", "PURGE"]
-
-var_re = re.compile(r"(?P<var><([a-zA-Z0-9_]+:)?(?P<var_name>[a-zA-Z0-9_]+)>)")
 
 
 def get_time():

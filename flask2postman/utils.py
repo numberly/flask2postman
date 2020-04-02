@@ -1,4 +1,5 @@
 import os
+import re
 import site
 import sys
 
@@ -11,6 +12,8 @@ else:
 
 venv_warning = ("WARNING: Attempting to work in a virtualenv. If you encounter "
                 "problems, please install flask2postman inside the virtualenv.")
+
+var_re = re.compile(r"(?P<var><([a-zA-Z0-9_]+:)?(?P<var_name>[a-zA-Z0-9_]+)>)")
 
 
 # ramnes: shamelessly stolen from https://www.python.org/dev/peps/pep-0257/

@@ -1,8 +1,6 @@
 import re
 
-from .utils import trim
-
-var_re = re.compile(r"(?P<var><([a-zA-Z0-9_]+:)?(?P<var_name>[a-zA-Z0-9_]+)>)")
+from .utils import trim, var_re
 
 
 class Collection:
