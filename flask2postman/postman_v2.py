@@ -7,8 +7,12 @@ var_re = re.compile(r"(?P<var><([a-zA-Z0-9_]+:)?(?P<var_name>[a-zA-Z0-9_]+)>)")
 
 class Collection:
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, name, base_url, all, add_folders):
+        self.name = name
+        self.base_url = base_url
+        self.all = all
+        self.add_folders = add_folders
+
         self.blueprints = []
         self.items = []
 
@@ -20,16 +24,16 @@ class Collection:
         for rule in current_app.url_map.iter_rules():
             endpoint = current_app.view_functions[rule.endpoint]
             for method in rule.methods:
-                if method in ["OPTIONS", "HEAD"] and not self.args.all:
+                if method in ["OPTIONS", "HEAD"] and not self.all:
                     continue
 
-                item = Item(rule, endpoint, method, self.args)
+                item = Item(rule, endpoint, method, self.base_url)
             self.items.append(item)
 
     @property
     def info(self):
         return {
-            "name": self.args.name,
+            "name": self.name,
             "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
         }
 
@@ -38,14 +42,14 @@ class Collection:
         items = []
 
         for item in self.items:
-            if item.blueprint and self.args.folders:
+            if item.blueprint and self.add_folders:
                 for blueprint in self.blueprints:
                     if blueprint.name == item.blueprint:
                         blueprint.items.append(item)
             else:
                 items.append(item)
 
-        if self.args.folders:
+        if self.add_folders:
             for blueprint in self.blueprints:
                 items.append(blueprint)
 
@@ -77,10 +81,10 @@ class Folder:
 
 class Item:
 
-    def __init__(self, rule, endpoint, method, args):
+    def __init__(self, rule, endpoint, method, base_url):
         self.rule = rule
         self.endpoint = endpoint
-        self.args = args
+        self.base_url = base_url
 
         self.method = method
         self.description = trim(endpoint.__doc__)
@@ -93,7 +97,7 @@ class Item:
 
     @property
     def url(self):
-        url = self.args.base_url + self.rule.rule
+        url = self.base_url + self.rule.rule
         for match in re.finditer(var_re, url):
             var = match.group("var")
             var_name = "{{" + match.group("var_name") + "}}"

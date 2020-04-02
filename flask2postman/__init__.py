@@ -56,9 +56,9 @@ def main():
 
     with app.app_context():
         if args.export_as_v1:
-            collection = CollectionV1(args)
+            collection = CollectionV1(args.name, args.base_url, args.all, args.static, args.folders)
         else:
-            collection = CollectionV2(args)
+            collection = CollectionV2(args.name, args.base_url, args.all, args.folders)
         collection.add_rules(current_app)
 
     if args.indent:
