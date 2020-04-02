@@ -4,7 +4,7 @@ from importlib import import_module
 
 from flask2postman.utils import init_virtualenv
 from flask2postman.postman_v1 import Collection as CollectionV1
-from flask2postman.postman import Collection
+from flask2postman.postman_v2 import Collection as CollectionV2
 __version__ = "1.4.3"
 
 
@@ -58,7 +58,7 @@ def main():
         if args.export_as_v1:
             collection = CollectionV1(args)
         else:
-            collection = Collection(args)
+            collection = CollectionV2(args)
         collection.add_rules(current_app)
 
     if args.indent:
