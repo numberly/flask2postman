@@ -15,7 +15,6 @@ def get_time():
 
 
 class Collection:
-
     def __init__(self, name, base_url, all, static, add_folders):
         self._folders = []
         self._requests = []
@@ -30,32 +29,37 @@ class Collection:
         self.id = str(uuid4())
         self.timestamp = get_time()
 
-    def add_rules(self, current_app):
+    @classmethod
+    def from_flask(cls, name, base_url, all, static, add_folders, current_app):
+        collection = cls(name, base_url, all, static, add_folders)
+
         for rule in current_app.url_map.iter_rules():
-            if rule.endpoint == "static" and not self.static:
+            if rule.endpoint == "static" and not static:
                 continue
 
             folder = None
-            if self.add_folders:
+            if add_folders:
                 try:
                     blueprint_name, _ = rule.endpoint.split('.', 1)
                 except ValueError:
                     pass
                 else:
-                    folder = self.get_folder(blueprint_name)
+                    folder = collection.get_folder(blueprint_name)
 
             endpoint = current_app.view_functions[rule.endpoint]
             description = trim(endpoint.__doc__)
 
             for method in rule.methods:
-                if method in ["OPTIONS", "HEAD"] and not self.all:
+                if method in ["OPTIONS", "HEAD"] and not all:
                     continue
 
-                request = Request.from_werkzeug(rule, method, self.base_url)
+                request = Request.from_werkzeug(rule, method, base_url)
                 request.description = description
-                if self.folders and folder:
+                if collection.folders and folder:
                     folder.add_request(request)
-                self.add_request(request)
+                collection.add_request(request)
+
+        return collection
 
     def reorder_requests(self):
         def _get_key(request):
@@ -102,7 +106,6 @@ class Collection:
 
 
 class Folder:
-
     def __init__(self, name):
         self._requests = []
 
@@ -131,7 +134,6 @@ class Folder:
 
 
 class Request:
-
     def __init__(self, name, url, method, collection_id="", data=None,
                  data_mode="params", description="", headers=""):
         self._folder = None

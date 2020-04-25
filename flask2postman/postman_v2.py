@@ -4,29 +4,39 @@ from .utils import trim, var_re
 
 
 class Collection:
-
     def __init__(self, name, base_url, all, add_folders):
         self.name = name
         self.base_url = base_url
         self.all = all
         self.add_folders = add_folders
 
-        self.blueprints = []
-        self.items = []
+        self.endpoints = []
+        self.folders = []
 
-    def add_rules(self, current_app):
+    @classmethod
+    def from_flask(cls, name, base_url, all, add_folders, current_app):
+        collection = cls(name, base_url, all, add_folders)
+
         for blueprint_name in current_app.blueprints:
             folder = Folder(blueprint_name)
-            self.blueprints.append(folder)
+            collection.add_folder(folder)
 
         for rule in current_app.url_map.iter_rules():
             endpoint = current_app.view_functions[rule.endpoint]
             for method in rule.methods:
-                if method in ["OPTIONS", "HEAD"] and not self.all:
+                if method in ["OPTIONS", "HEAD"] and not all:
                     continue
 
-                item = Item(rule, endpoint, method, self.base_url)
-            self.items.append(item)
+                endpoint = Endpoint(rule, endpoint, method, base_url)
+                collection.add_endpoint(endpoint)
+
+        return collection
+
+    def add_endpoint(self, endpoint):
+        self.endpoints.append(endpoint)
+
+    def add_folder(self, folder):
+        self.folders.append(folder)
 
     @property
     def info(self):
@@ -39,17 +49,17 @@ class Collection:
     def item(self):
         items = []
 
-        for item in self.items:
-            if item.blueprint and self.add_folders:
-                for blueprint in self.blueprints:
-                    if blueprint.name == item.blueprint:
-                        blueprint.items.append(item)
+        for item in self.endpoints:
+            if item.folder and self.add_folders:
+                for folder in self.folders:
+                    if folder.name == item.folder:
+                        folder.endpoints.append(item)
             else:
                 items.append(item)
 
         if self.add_folders:
-            for blueprint in self.blueprints:
-                items.append(blueprint)
+            for folder in self.folders:
+                items.append(folder)
 
         return [item.to_dict() for item in items]
 
@@ -61,14 +71,13 @@ class Collection:
 
 
 class Folder:
-
     def __init__(self, name):
         self.name = name
-        self.items = []
+        self.endpoints = []
 
     @property
     def item(self):
-        return [item.to_dict() for item in self.items]
+        return [item.to_dict() for item in self.endpoints]
 
     def to_dict(self):
         return {
@@ -77,8 +86,7 @@ class Folder:
         }
 
 
-class Item:
-
+class Endpoint:
     def __init__(self, rule, endpoint, method, base_url):
         self.rule = rule
         self.endpoint = endpoint
@@ -103,10 +111,10 @@ class Item:
         return url
 
     @property
-    def blueprint(self):
+    def folder(self):
         if "." in self.rule.endpoint:
-            blueprint_name, _ = self.rule.endpoint.split('.', 1)
-            return blueprint_name
+            folder_name, _ = self.rule.endpoint.split('.', 1)
+            return folder_name
 
         return None
 
