@@ -1,4 +1,4 @@
-.. _Postman: https://www.getpostman.com/
+.. _Postman: https://www.postman.com/
 .. _Flask: http://flask.pocoo.org/
 
 =============
