@@ -8,7 +8,7 @@ def get_foo():
     """Get some foo.
 
     Returns:
-        A string contaning a nice foo.
+        A string containing a nice foo.
     """
     return "foo"
 
